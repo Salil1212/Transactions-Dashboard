@@ -3,26 +3,43 @@ const router = express.Router();
 const ProductTransaction = require("../models/ProductTransaction");
 
 // GET /transactions
-// API to list all transactions with search and pagination
+// API to list all transactions with search, pagination, and month filtering
 async function transactionsHandler(req, res) {
-  const { search = "", page = 1, per_page = 10 } = req.query;
+  const { search = "", page = 1, per_page = 10, month } = req.query;
 
-  const query = {};
+  const matchQuery = {};
 
   if (search) {
-    query.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-      { price: { $regex: search, $options: "i" } }, // assuming price can be searched as text
-    ];
+    const searchRegex = { $regex: search, $options: "i" };
+    const searchNumber = parseFloat(search);
+
+    // Separate conditions for price if it's a valid number
+    if (!isNaN(searchNumber)) {
+      matchQuery.$or = [
+        { title: searchRegex },
+        { description: searchRegex },
+        { price: searchNumber },
+      ];
+    } else {
+      matchQuery.$or = [{ title: searchRegex }, { description: searchRegex }];
+    }
+  }
+
+  if (month) {
+    matchQuery.$expr = {
+      $eq: [{ $month: "$dateOfSale" }, parseInt(month, 10)],
+    };
   }
 
   try {
-    const count = await ProductTransaction.countDocuments(query);
-    const transactions = await ProductTransaction.find(query)
-      .skip((page - 1) * per_page)
-      .limit(parseInt(per_page, 10))
-      .exec();
+    const count = await ProductTransaction.countDocuments(matchQuery);
+    console.log("Match Query:", matchQuery); // Logging match query
+
+    const transactions = await ProductTransaction.aggregate([
+      { $match: matchQuery },
+      { $skip: (page - 1) * per_page },
+      { $limit: parseInt(per_page, 10) },
+    ]).exec();
 
     res.json({
       total_count: count,
@@ -31,8 +48,10 @@ async function transactionsHandler(req, res) {
       transactions: transactions,
     });
   } catch (error) {
-    console.error("Error fetching transactions:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error fetching transactions:", error.message, error.stack);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 }
 
