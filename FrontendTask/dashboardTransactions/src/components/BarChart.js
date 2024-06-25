@@ -35,6 +35,8 @@ const BarChart = ({ data }) => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Ensures the chart is not constrained by its parent container
+    aspectRatio: 1, // Aspect ratio of 1:1 (square)
     scales: {
       y: {
         beginAtZero: true, // Ensure the y-axis starts from 0
@@ -45,7 +47,7 @@ const BarChart = ({ data }) => {
     },
     plugins: {
       legend: {
-        position: "top",
+        position: "top", // Position of the legend
       },
       title: {
         display: true,
@@ -54,7 +56,11 @@ const BarChart = ({ data }) => {
     },
   };
 
-  return <Bar data={chartData} options={options} />;
+  return (
+    <div style={{ maxWidth: "100vw", maxHeight: "400vh" }}>
+      <Bar data={chartData} options={options} />
+    </div>
+  );
 };
 
 export default BarChart;
