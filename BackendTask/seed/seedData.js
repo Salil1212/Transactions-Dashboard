@@ -3,7 +3,7 @@ const axios = require("axios");
 const ProductTransaction = require("../models/ProductTransaction");
 
 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function fetchAndSeedData() {
   try {
