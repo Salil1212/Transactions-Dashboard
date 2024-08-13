@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const axios = require("axios");
 const ProductTransaction = require("../models/ProductTransaction");
 
-const mongoURI = "mongodb://localhost:27017/productTransactions";
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
