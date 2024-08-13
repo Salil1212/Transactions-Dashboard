@@ -4,8 +4,8 @@
   "description": "This is my Backend Task",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js seed/seedData.js",
+    "test": "node seed/seedData.js",
+    "start": "node app.js",
     "dev": "nodemon app.js"
   },
   "author": "SalilNigam",
