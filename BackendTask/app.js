@@ -6,6 +6,7 @@ const statisticsRouter = require("./routes/statistics");
 const chartsRouter = require("./routes/charts");
 const combinedRouter = require("./routes/combined");
 const cors = require("cors");
+const { configDotenv } = require("dotenv");
 const app = express();
 const port = 3000;
 
@@ -14,7 +15,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 mongoose
-  .connect("mongodb://localhost:27017/productTransactions", {
+  .connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
